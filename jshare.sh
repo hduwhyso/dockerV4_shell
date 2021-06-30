@@ -1,7 +1,6 @@
 ## 目录
 dir_config=$dir_root/config
 dir_scripts=$dir_root/scripts
-dir_panel=$dir_root/jpanel
 dir_bot=$dir_root/jbot
 dir_own=$dir_root/own
 dir_raw=$dir_own/raw
@@ -19,7 +18,6 @@ file_config_user=$dir_config/config.sh
 file_bot_setting_sample=$dir_sample/bot.sample.json
 file_bot_setting_user=$dir_config/bot.json
 file_diy_shell=$dir_config/diy.sh
-file_task_finish_shell=$dir_config/task_finish.sh
 
 ## 清单文件
 list_crontab_user=$dir_config/crontab.list
@@ -44,12 +42,12 @@ env_name=(
     DDFACTORY_SHARECODES
     JDZZ_SHARECODES
     JDJOY_SHARECODES
+    JXNC_SHARECODES
     BOOKSHOP_SHARECODES
     JD_CASH_SHARECODES
     JDSGMH_SHARECODES
     JDCFD_SHARECODES
     JDHEALTH_SHARECODES
-    JD818_SHARECODES
 )
 var_name=(
     Cookie
@@ -60,12 +58,12 @@ var_name=(
     ForOtherJdFactory
     ForOtherJdzz
     ForOtherJoy
+    ForOtherJxnc
     ForOtherBookShop
     ForOtherCash
     ForOtherSgmh
     ForOtherCfd
     ForOtherHealth
-    ForOtherJD818
 )
 
 ## 所有有互助码的活动，把脚本名称列在 name_js 中，对应 config.sh 中互助码后缀列在 name_config 中，中文名称列在 name_chinese 中。
@@ -78,12 +76,12 @@ name_js=(
     jd_jdfactory
     jd_jdzz
     jd_crazy_joy
+    jd_jxnc
     jd_bookshop
     jd_cash
     jd_sgmh
     jd_cfd
     jd_health
-    jd_carnivalcity
 )
 name_config=(
     Fruit
@@ -93,12 +91,12 @@ name_config=(
     JdFactory
     Jdzz
     Joy
+    Jxnc
     BookShop
     Cash
     Sgmh
     Cfd
     Health
-    JD818
 )
 name_chinese=(
     东东农场
@@ -108,12 +106,12 @@ name_chinese=(
     东东工厂
     京东赚赚
     crazyJoy任务
+    京喜农场
     口袋书店
     签到领现金
     闪购盲盒
     京喜财富岛
     东东健康社区
-    京东手机狂欢城
 )
 
 ## 软连接及其原始文件对应关系
@@ -193,7 +191,7 @@ notify_telegram () {
 
 ## 统计用户数量
 count_user_sum () {
-    for ((i=1; i<=${SUM:-100}; i++)); do
+    for ((i=1; i<=${SUM:-$((25 * 400))}; i++)); do
         local tmp1=Cookie$i
         local tmp2=${!tmp1}
         [[ $tmp2 ]] && user_sum=$i || break
@@ -304,16 +302,4 @@ update_crontab () {
     if [[ $(cat $list_crontab_user) != $(crontab -l) ]]; then
         crontab $list_crontab_user
     fi
-}
-
-## 生成pt_pin清单
-gen_pt_pin_array () {
-    local tmp1 tmp2 i pt_pin_temp
-    for ((user_num=1; user_num<=$user_sum; user_num++)); do
-        tmp1=Cookie$user_num
-        tmp2=${!tmp1}
-        i=$(($user_num - 1))
-        pt_pin_temp=$(echo $tmp2 | perl -pe "{s|.*pt_pin=([^; ]+)(?=;?).*|\1|; s|%|\\\x|g}")
-        [[ $pt_pin_temp == *\\x* ]] && pt_pin[i]=$(printf $pt_pin_temp) || pt_pin[i]=$pt_pin_temp
-    done
 }
